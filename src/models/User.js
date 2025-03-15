@@ -39,7 +39,11 @@ const userSchema = new mongoose.Schema({
   isAccountActivated: {
     type: Boolean,
     default: false,
-  }
+  },
+  activationToken: {
+    type: String,
+    unique: true,
+  },
 });
 
 userSchema.pre('save', async function (next) {

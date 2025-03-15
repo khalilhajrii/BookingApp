@@ -11,7 +11,7 @@ const getUsers = async (req, res) => {
 
 const getUserById = async (req, res) => {
     try {
-        const { id } = req.body;
+        const { id } = req.params;
         const user = await User.findById(id).populate('role');
         res.status(200).json({ user });
     } catch (error) {

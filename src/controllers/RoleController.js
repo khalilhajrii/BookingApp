@@ -1,7 +1,20 @@
 
 const Role = require('../models/Role');
 
-const getRoles= async (req, res) => {
+
+const addRole = async (req, res) => {
+    try {
+        const { name } = req.body;
+        const role = new Role({ name });
+        await role.save();
+        res.status(200).json({ role });
+    } catch (error) {
+        res.status(500).json({ message: 'Error registering user', error: error.message });
+    }
+};
+
+
+const getRoles = async (req, res) => {
     try {
         const roles = await Role.find();
         res.status(200).json({ roles });
@@ -12,7 +25,7 @@ const getRoles= async (req, res) => {
 
 const getRoleById = async (req, res) => {
     try {
-        const { id } = req.body;
+        const { id } = req.params;
         const role = await Role.findById(id);
         res.status(200).json({ role });
     } catch (error) {
@@ -26,7 +39,7 @@ const updateRole = async (req, res) => {
 
         const updatedRole = await Role.findByIdAndUpdate(
             id,
-            { name},
+            { name },
             { new: true }
         );
 
@@ -55,4 +68,4 @@ const deleteRole = async (req, res) => {
     }
 };
 
-module.exports = { getRoles, getRoleById, updateRole, deleteRole };
+module.exports = { getRoles, getRoleById, updateRole, deleteRole,addRole };
