@@ -2,8 +2,9 @@ const express = require('express');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const authRoutes = require('./routes/authRoutes');
+const userRoutes = require('./routes/userRoutes');
 dotenv.config();
-
+const { specs, swaggerUi } = require('./config/swagger');
 const app = express();
 
 app.use(express.json());
@@ -16,8 +17,7 @@ mongoose.connect(process.env.MONGODB_URI, {
 .catch(err => console.error('Could not connect to MongoDB', err));
 
 app.use('/api/auth', authRoutes);
-app.get('/', (req, res) => {
-  res.send('Barber Booking App');
-});
+app.use('/api/user', userRoutes);
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 
 module.exports = app;
