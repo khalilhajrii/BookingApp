@@ -4,6 +4,7 @@ const dotenv = require('dotenv');
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
 const roleRoutes = require('./routes/roleRoutes');
+const bookingRoutes = require('./routes/bookingRoutes');
 dotenv.config();
 const { specs, swaggerUi } = require('./config/swagger');
 const app = express();
@@ -20,6 +21,7 @@ mongoose.connect(process.env.MONGODB_URI, {
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/role', roleRoutes);
+app.use('/api/bookings', roleRoutes);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 
 module.exports = app;
