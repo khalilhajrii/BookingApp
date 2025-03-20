@@ -21,7 +21,7 @@ mongoose.connect(process.env.MONGODB_URI, {
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/role', roleRoutes);
-app.use('/api/bookings', roleRoutes);
+app.use('/api/bookings', bookingRoutes);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 
 module.exports = app;
