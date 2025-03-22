@@ -1,16 +1,17 @@
 import React from 'react';
 import { Navbar, Container, Nav, Button } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
 
 const NavBar = () => {
     return (
-        <Navbar bg="dark" data-bs-theme="dark">
+        <Navbar bg="dark" data-bs-theme="dark" className='navbar-fixed-top'>
         <Container>
-          <Navbar.Brand href="/">Barber</Navbar.Brand>
+          <Navbar.Brand as={Link} to="/">Barber</Navbar.Brand>
           <Nav className="me-auto">
-            <Nav.Link href="#home">Home</Nav.Link>
+            <Nav.Link as={Link} to="/">Home</Nav.Link>
           </Nav>
           <Navbar.Collapse className="justify-content-end">
-            <Button variant="outline-light">Login / Sign In</Button>
+            <Button as={Link} to="/register" variant="outline-light">Login / Sign In</Button>
           </Navbar.Collapse>
         </Container>
       </Navbar>
