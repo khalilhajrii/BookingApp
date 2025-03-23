@@ -6,6 +6,9 @@ import LoginPage from './Pages/LoginPage';
 import RegisterPage from './Pages/RegisterPage';
 import UserDashboard from './Pages/User/UserDashboard';
 import AdminDashboard from './Pages/Admin/AdminDashboard';
+import HomePage from './Pages/HomePage';
+import RegistrationSuccess from './Pages/RegistrationSuccess';
+import AccountActivation from './Pages/AccountActivation';
 
 function App() {
   return (
@@ -13,8 +16,9 @@ function App() {
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
+        <Route path="/registration-success" element={<RegistrationSuccess />} />
+        <Route path="/activate/:token" element={<AccountActivation />} />
         
-        {/* Protected User Dashboard Route */}
         <Route 
           path="/user-dashboard" 
           element={
@@ -32,7 +36,7 @@ function App() {
             </PrivateRoute>
           } 
         />
-        <Route path="/" element={<LoginPage />} />
+        <Route path="/" element={<HomePage />} />
       </Routes>
     </Router>
   );

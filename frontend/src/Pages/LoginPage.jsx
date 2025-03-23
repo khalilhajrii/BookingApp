@@ -11,6 +11,7 @@ import {
   MDBCardBody
 } from 'mdb-react-ui-kit';
 import { jwtDecode } from 'jwt-decode';
+import Footer from '../Components/Footer';
 
 function LoginPage() {
   const navigate = useNavigate();

@@ -18,6 +18,20 @@ const getUserById = async (req, res) => {
         res.status(500).json({ message: 'Error getting users', error: error.message });
     }
 };
+const getUserByUserName = async (req, res) => {
+    try {
+        const { username } = req.params;
+        const user = await User.findOne({ username }).populate('role');
+
+        if (user) {
+            return res.status(409).json({ message: 'Duplicated username', user });
+        } else {
+            return res.status(200).json({ message: 'Username is available' });
+        }
+    } catch (error) {
+        res.status(500).json({ message: 'Error getting user', error: error.message });
+    }
+};
 const updateUser = async (req, res) => {
     try {
         const { id } = req.params;
@@ -54,4 +68,4 @@ const deleteUser = async (req, res) => {
     }
 };
 
-module.exports = { getUsers, getUserById, updateUser, deleteUser };
+module.exports = { getUsers, getUserById, updateUser, deleteUser, getUserByUserName };

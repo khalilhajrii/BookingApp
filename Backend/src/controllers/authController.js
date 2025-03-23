@@ -15,11 +15,15 @@ const register = async (req, res) => {
     const activationToken = uuidv4();
     const user = new User({ username, email, password, role, phone, address, activationToken });
     await user.save();
-    const activationLink = `http://localhost:3000/api/auth/activate/${activationToken}`;
-    const emailSubject = 'Activate Your Account';
-    const emailText = `Click the link below to activate your account:\n\n${activationLink}`;
-    await sendEmail(email, emailSubject, emailText);
-    res.status(200).json({ user });
+    res.status(201).json({
+      message: 'User registered successfully. Please check your email to activate your account.',
+      user: {
+        username: user.username,
+        email: user.email,
+        activationToken: user.activationToken,
+        _id: user._id,
+      },
+    });
   } catch (error) {
     res.status(500).json({ message: 'Error registering user', error: error.message });
   }
