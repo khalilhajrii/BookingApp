@@ -9,6 +9,8 @@ import AdminDashboard from './Pages/Admin/AdminDashboard';
 import HomePage from './Pages/HomePage';
 import RegistrationSuccess from './Pages/RegistrationSuccess';
 import AccountActivation from './Pages/AccountActivation';
+import TakeReservation from './Pages/User/TakeReservation';
+import MyReservations from './Pages/User/MyReservations';
 
 function App() {
   return (
@@ -26,7 +28,10 @@ function App() {
               <UserDashboard />
             </PrivateRoute>
           } 
-        />
+        >
+          <Route path="take-reservation" element={<TakeReservation />} />
+          <Route path="my-reservations" element={<MyReservations />} />
+        </Route>
 
         <Route 
           path="/admin-dashboard" 

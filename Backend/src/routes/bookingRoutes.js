@@ -7,6 +7,7 @@ const jwtMiddleware = require('../middleware/authMiddleware');
 router.post('/bookings', jwtMiddleware, checkRole('user'), bookingController.createBooking);
 router.put('/bookings/:id', jwtMiddleware, checkRole('user'), bookingController.updateBooking);
 router.delete('/bookings/:id', jwtMiddleware, checkRole('user'), bookingController.deleteBooking);
+router.get('/bookings/allBarbers', jwtMiddleware, checkRole('user'), bookingController.listAllBarbers);
 
 // Barber routes
 router.get('/barber/bookings', jwtMiddleware, checkRole('barber'), bookingController.getBarberBookings);

@@ -1,5 +1,28 @@
 const Booking = require('../models/booking');
 const User = require('../models/User');
+const Role = require('../models/role');
+
+const listAllBarbers = async (req, res) => {
+    try {
+        const barberRole = await Role.findOne({ name: 'barber' });
+        if (!barberRole) {
+            return res.status(404).json({ message: 'Barber role not found' });
+        }
+
+        const barbers = await User.find({ role: barberRole._id })
+            .select('username email phone address') 
+            .populate('role', 'name'); 
+
+        res.status(200).json(
+            barbers);
+
+    } catch (error) {
+        res.status(500).json({ 
+            message: 'Error retrieving barbers', 
+            error: error.message 
+        });
+    }
+};
 
 const createBooking = async (req, res) => {
     try {
@@ -98,4 +121,5 @@ module.exports = {
     deleteBooking,
     getBarberBookings,
     updateBookingStatus,
+    listAllBarbers,
 };
