@@ -14,11 +14,15 @@ import {
 function RegisterPage() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
+    name: '',
+    lastname: '',
+    dateOfBirth: '',
+    sexe: '',
     username: '',
     email: '',
-    password: ''
+    password: '',
+    phone: '',
+    address: ''
   });
   const [error, setError] = useState('');
   const [usernameError, setUsernameError] = useState('');
@@ -39,7 +43,7 @@ function RegisterPage() {
     try {
       const response = await fetch(`http://localhost:8000/api/user/getuserByUserName/${username}`);
       const data = await response.json();
-      
+
       if (response.ok && data.message === "Duplicated username") {
         setUsernameError('This username is already taken');
         return false;
@@ -47,14 +51,14 @@ function RegisterPage() {
       return true;
     } catch (err) {
       console.error('Error checking username:', err);
-      return true; 
+      return true;
     }
   };
 
   const sendActivationEmail = async (email, activationToken) => {
     try {
       const activationLink = `http://localhost:3000/activate/${activationToken}`;
-  
+
       const response = await fetch('http://localhost:8000/api/notifications/sendActivationLink', {
         method: 'POST',
         headers: {
@@ -63,10 +67,10 @@ function RegisterPage() {
         body: JSON.stringify({
           to: email,
           subject: 'Activate Your Account',
-          activationLink: activationLink, 
+          activationLink: activationLink,
         }),
       });
-  
+
       if (!response.ok) {
         throw new Error('Failed to send activation email');
       }
@@ -96,7 +100,13 @@ function RegisterPage() {
           username: formData.username,
           email: formData.email,
           password: formData.password,
-          role: "67d49e97eaed80cbda5dff9a"
+          role: "67d49e97eaed80cbda5dff9a",
+          name: formData.name,
+          lastname: formData.lastname,
+          dateOfBirth: formData.dateOfBirth,
+          sexe: formData.sexe,
+          phone: formData.phone,
+          address: formData.address
         }),
       });
 
@@ -125,7 +135,7 @@ function RegisterPage() {
 
   return (
     <div>
-      <NavBar/>
+      <NavBar />
       <div className='container'>
         <MDBContainer fluid className='p-4'>
           <MDBRow>
@@ -142,35 +152,69 @@ function RegisterPage() {
                   <form onSubmit={handleSubmit}>
                     <MDBRow>
                       <MDBCol col='6'>
-                        <MDBInput 
-                          wrapperClass='mb-4' 
-                          label='First name' 
-                          id='firstName' 
+                        <MDBInput
+                          wrapperClass='mb-4'
+                          label='First name'
+                          id='name'
                           type='text'
-                          value={formData.firstName}
+                          value={formData.name}
                           onChange={handleInputChange}
+                          required
                         />
                       </MDBCol>
 
                       <MDBCol col='6'>
-                        <MDBInput 
-                          wrapperClass='mb-4' 
-                          label='Last name' 
-                          id='lastName' 
+                        <MDBInput
+                          wrapperClass='mb-4'
+                          label='Last name'
+                          id='lastname'
                           type='text'
-                          value={formData.lastName}
+                          value={formData.lastname}
                           onChange={handleInputChange}
+                          required
                         />
                       </MDBCol>
                     </MDBRow>
 
-                    <MDBInput 
-                      wrapperClass='mb-4' 
-                      label='Username' 
-                      id='username' 
+                    <MDBRow>
+                      <MDBCol col='6'>
+                        <MDBInput
+                          wrapperClass='mb-4'
+                          label='Date of Birth'
+                          id='dateOfBirth'
+                          type='date'
+                          value={formData.dateOfBirth}
+                          onChange={handleInputChange}
+                          required
+                        />
+                      </MDBCol>
+
+                      <MDBCol col='6'>
+                        <div className="form-outline mb-4">
+                          <select
+                            className="form-select"
+                            id="sexe"
+                            value={formData.sexe}
+                            onChange={handleInputChange}
+                            required
+                          >
+                            <option value="">Select Gender</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                          </select>
+                          <label className="form-label" htmlFor="sexe">Gender</label>
+                        </div>
+                      </MDBCol>
+                    </MDBRow>
+
+                    <MDBInput
+                      wrapperClass='mb-4'
+                      label='Username'
+                      id='username'
                       type='text'
                       value={formData.username}
                       onChange={handleInputChange}
+                      required
                     />
                     {usernameError && (
                       <div className="text-danger mb-3 small">
@@ -178,21 +222,44 @@ function RegisterPage() {
                       </div>
                     )}
 
-                    <MDBInput 
-                      wrapperClass='mb-4' 
-                      label='Email' 
-                      id='email' 
+                    <MDBInput
+                      wrapperClass='mb-4'
+                      label='Email'
+                      id='email'
                       type='email'
                       value={formData.email}
                       onChange={handleInputChange}
+                      required
                     />
-                    <MDBInput 
-                      wrapperClass='mb-4' 
-                      label='Password' 
-                      id='password' 
+
+                    <MDBInput
+                      wrapperClass='mb-4'
+                      label='Password'
+                      id='password'
                       type='password'
                       value={formData.password}
                       onChange={handleInputChange}
+                      required
+                    />
+
+                    <MDBInput
+                      wrapperClass='mb-4'
+                      label='Phone'
+                      id='phone'
+                      type='tel'
+                      value={formData.phone}
+                      onChange={handleInputChange}
+                      required
+                    />
+
+                    <MDBInput
+                      wrapperClass='mb-4'
+                      label='Address'
+                      id='address'
+                      type='text'
+                      value={formData.address}
+                      onChange={handleInputChange}
+                      required
                     />
 
                     {error && (
@@ -207,10 +274,10 @@ function RegisterPage() {
                       </div>
                     )}
 
-                    <MDBBtn 
-                      type='submit' 
-                      className='w-100 mb-4' 
-                      size='md' 
+                    <MDBBtn
+                      type='submit'
+                      className='w-100 mb-4'
+                      size='md'
                       color='dark'
                       disabled={!!usernameError}
                     >

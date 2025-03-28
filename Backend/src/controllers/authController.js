@@ -2,22 +2,30 @@ const User = require('../models/User');
 const Role = require('../models/Role');
 const { generateToken } = require('../utils/jwt');
 const { v4: uuidv4 } = require('uuid');
-const { sendEmail } = require('../config/email');
 
 const register = async (req, res) => {
   try {
-    const { username, email, password, role, phone, address } = req.body;
+    const { username,name,lastname,dateOfBirth,sexe, email, password, role, phone, address } = req.body;
 
     const roleExists = await Role.findById(role);
     if (!roleExists) {
       return res.status(400).json({ message: 'Invalid role' });
     }
     const activationToken = uuidv4();
-    const user = new User({ username, email, password, role, phone, address, activationToken });
+    const user = new User({ username,name,lastname,dateOfBirth,sexe, email, password, role, phone, address, activationToken });
     await user.save();
     res.status(201).json({
       message: 'User registered successfully. Please check your email to activate your account.',
       user: {
+        name: user.name,
+        lastname: user.lastname,
+        dateOfBirth: user.dateOfBirth,
+        sexe: user.sexe,
+        phone: user.phone,
+        address: user.address,
+        role: user.role,
+        createdAt: user.createdAt,
+        isAccountActivated: user.isAccountActivated,
         username: user.username,
         email: user.email,
         activationToken: user.activationToken,
