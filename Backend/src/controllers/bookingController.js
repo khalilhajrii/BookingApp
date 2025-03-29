@@ -10,16 +10,16 @@ const listAllBarbers = async (req, res) => {
         }
 
         const barbers = await User.find({ role: barberRole._id })
-            .select('username email phone address') 
-            .populate('role', 'name'); 
+            .select('username email phone address')
+            .populate('role', 'name');
 
         res.status(200).json(
             barbers);
 
     } catch (error) {
-        res.status(500).json({ 
-            message: 'Error retrieving barbers', 
-            error: error.message 
+        res.status(500).json({
+            message: 'Error retrieving barbers',
+            error: error.message
         });
     }
 };
@@ -28,16 +28,18 @@ const createBooking = async (req, res) => {
     try {
         const { barberId, date, time } = req.body;
         const userId = req.user.userId;
+        const status = 'pending';
+        const createdAt = new Date();
 
         const barber = await User.findById(barberId);
         if (!barber || barber.role.name !== 'barber') {
             return res.status(400).json({ message: 'Invalid barber' });
         }
 
-        const booking = new Booking({ user: userId, barber: barberId, date, time });
+        const booking = new Booking({ user: userId, barber: barberId, date, time, status, createdAt });
         await booking.save();
 
-        res.status(200).json({ message: 'Booking created successfully', booking });
+        res.status(200).json({ booking });
     } catch (error) {
         res.status(500).json({ message: 'Error creating booking', error: error.message });
     }
