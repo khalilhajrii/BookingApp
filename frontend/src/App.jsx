@@ -1,6 +1,6 @@
 import './App.css';
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import PrivateRoute from './utils/PrivateRoute';
 import LoginPage from './Pages/LoginPage';
 import RegisterPage from './Pages/RegisterPage';
@@ -12,6 +12,7 @@ import AccountActivation from './Pages/AccountActivation';
 import TakeReservation from './Pages/User/TakeReservation';
 import MyReservations from './Pages/User/MyReservations';
 import BarberList from './Components/BarberList';
+import EditBooking from './Components/EditBooking';
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
           <Route index element={<BarberList />} />
           <Route path="take-reservation/:barberid" element={<TakeReservation />} />
           <Route path="my-reservations" element={<MyReservations />} />
+          <Route path="edit-booking/:id" element={<EditBooking />} />
         </Route>
 
         <Route 

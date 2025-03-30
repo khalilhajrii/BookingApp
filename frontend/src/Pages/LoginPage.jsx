@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import NavBar from '../Components/NavBar';
 import {
-  MDBBtn,
   MDBContainer,
   MDBRow,
   MDBCol,
@@ -11,7 +10,6 @@ import {
   MDBCardBody
 } from 'mdb-react-ui-kit';
 import { jwtDecode } from 'jwt-decode';
-import Footer from '../Components/Footer';
 
 function LoginPage() {
   const navigate = useNavigate();
@@ -109,14 +107,14 @@ function LoginPage() {
                       </div>
                     )}
 
-                    <MDBBtn 
+                    <button 
                       type='submit'
-                      className='w-100 mb-4' 
+                      className='w-100 mb-4 btn btn-dark' 
                       size='md' 
                       color='dark'
                     >
                       sign in
-                    </MDBBtn>
+                    </button>
 
                     <div className="text-center">
                       <p>Don't have an account? <a href="/register" className="text-primary">Sign up</a></p>

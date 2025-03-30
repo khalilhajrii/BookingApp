@@ -6,7 +6,7 @@ const checkRole = (requiredRole) => {
   
       const userRole = req.user.role.name;
   
-      if (userRole !== requiredRole) {
+      if (!requiredRole.includes(userRole)) {
         return res.status(403).json({ message: 'Access denied' });
       }
   

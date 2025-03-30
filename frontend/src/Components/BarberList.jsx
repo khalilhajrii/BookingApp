@@ -8,7 +8,6 @@ import {
   MDBCardBody,
   MDBCardTitle,
   MDBCardText,
-  MDBBtn,
   MDBSpinner
 } from 'mdb-react-ui-kit';
 
@@ -90,13 +89,13 @@ const BarberList = () => {
                     <strong>Phone:</strong> {barber.phone || 'Not provided'}<br />
                     <strong>Address:</strong> {barber.address || 'Not provided'}<br />
                   </MDBCardText>
-                  <MDBBtn 
+                  <button 
                     color='dark' 
                     onClick={() => handleBookClick(barber._id)}
-                    className="w-100"
+                    className="w-100 btn btn-dark"
                   >
                     Book Now
-                  </MDBBtn>
+                  </button>
                 </MDBCardBody>
               </MDBCard>
             </MDBCol>
