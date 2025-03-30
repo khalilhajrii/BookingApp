@@ -274,15 +274,15 @@ function RegisterPage() {
                       </div>
                     )}
 
-                    <MDBBtn
+                    <button
                       type='submit'
-                      className='w-100 mb-4'
+                      className='w-100 mb-4 btn btn-dark'
                       size='md'
                       color='dark'
                       disabled={!!usernameError}
                     >
                       sign up
-                    </MDBBtn>
+                    </button>
 
                     <div className="text-center">
                       <p>Already have an account? <a href="/login" className="text-primary">Sign in</a></p>

@@ -1,6 +1,7 @@
 const Booking = require('../models/booking');
 const User = require('../models/User');
 const Role = require('../models/role');
+const { sendBookingStatusUpdate, sendUserStatusUpdateToBarber, sendBarberStatusUpdateToUser, sendNewBookingNotification } = require('./notificationController');
 
 const listAllBarbers = async (req, res) => {
     try {
@@ -61,6 +62,19 @@ const createBooking = async (req, res) => {
 
         try {
             await booking.save();
+
+            // Send email notification to barber
+            const bookingDetails = {
+                barberName: `${barber.name} ${barber.lastname}`,
+                date: bookingDate,
+                time: time,
+                userName: `${user.name} ${user.lastname}`,
+                userEmail: user.email,
+                userPhone: user.phone || 'Not provided'
+            };
+
+            await sendNewBookingNotification(barber.email, bookingDetails);
+
             res.status(200).json({ booking });
         } catch (saveError) {
             console.error('Save error details:', saveError);
@@ -83,15 +97,14 @@ const createBooking = async (req, res) => {
 const updateBooking = async (req, res) => {
     try {
         const { id } = req.params;
-        const { date, time, status } = req.body;
+        const { date, time, status, sender } = req.body;
         const userId = req.user.id;
 
-        const booking = await Booking.findOne({ _id: id, user: userId });
+        const booking = await Booking.findOne({ _id: id});
         if (!booking) {
             return res.status(404).json({ message: 'Booking not found' });
         }
 
-        // Update fields if provided
         if (date) {
             const bookingDate = new Date(date);
             if (isNaN(bookingDate.getTime())) {
@@ -109,13 +122,33 @@ const updateBooking = async (req, res) => {
         }
 
         if (status) {
-            if (!['pending', 'confirmed', 'cancelled'].includes(status)) {
+            if (!['pending', 'confirmed', 'cancelled','rejected'].includes(status)) {
                 return res.status(400).json({ message: 'Invalid status' });
             }
             booking.status = status;
         }
 
         await booking.save();
+
+        if (status) {
+            const populatedBooking = await Booking.findById(booking._id)
+                .populate('user', 'name lastname email')
+                .populate('barber', 'name lastname email');
+
+            const bookingDetails = {
+                userName: `${populatedBooking.user.name} ${populatedBooking.user.lastname}`,
+                barberName: `${populatedBooking.barber.name} ${populatedBooking.barber.lastname}`,
+                status: status,
+                date: populatedBooking.date,
+                time: populatedBooking.time
+            };
+
+            if (sender === 'user') {
+                await sendUserStatusUpdateToBarber(populatedBooking.barber.email, bookingDetails);
+            } else {
+                await sendBarberStatusUpdateToUser(populatedBooking.user.email, bookingDetails);
+            }
+        }
 
         res.status(200).json({ message: 'Booking updated successfully', booking });
     } catch (error) {
@@ -128,7 +161,7 @@ const deleteBooking = async (req, res) => {
         const { id } = req.params;
         const userId = req.user.id;
 
-        const booking = await Booking.findOne({ _id: id, user: userId });
+        const booking = await Booking.findOne({ _id: id });
         if (!booking) {
             return res.status(404).json({ message: 'Booking not found' });
         }
@@ -199,8 +232,8 @@ const getBookingsByBarberId = async (req, res) => {
         }
 
         const bookings = await Booking.find({ barber: barberId })
-            .populate('user', 'username email')
-            .populate('barber', 'username email')
+            .populate('user', 'username email name lastname')
+            .populate('barber', 'username email name lastname')
             .sort({ date: 1, time: 1 });
 
         res.status(200).json(bookings);
@@ -214,7 +247,7 @@ const getUserBookings = async (req, res) => {
         const userId = req.user.id;
 
         const bookings = await Booking.find({ user: userId })
-            .populate('barber', 'username email')
+            .populate('barber', 'username email name lastname phone')
             .sort({ date: -1, time: -1 });
 
         res.status(200).json(bookings);

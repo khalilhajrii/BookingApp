@@ -13,6 +13,9 @@ import TakeReservation from './Pages/User/TakeReservation';
 import MyReservations from './Pages/User/MyReservations';
 import BarberList from './Components/BarberList';
 import EditBooking from './Components/EditBooking';
+import BarberDashboard from './Pages/Barber/BarberDashboard';
+import BarberReservations from './Pages/Barber/BarberReservations';
+import UserManagement from './Pages/Admin/UserManagement';
 
 function App() {
   return (
@@ -22,7 +25,8 @@ function App() {
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/registration-success" element={<RegistrationSuccess />} />
         <Route path="/activate/:token" element={<AccountActivation />} />
-        
+        <Route path="/" element={<HomePage />} />
+
         <Route path="/user-dashboard" element={
           <PrivateRoute allowedRoles={['user']}>
             <UserDashboard />
@@ -34,15 +38,27 @@ function App() {
           <Route path="edit-booking/:id" element={<EditBooking />} />
         </Route>
 
-        <Route 
-          path="/admin-dashboard" 
+        <Route
+          path="/admin-dashboard"
           element={
             <PrivateRoute allowedRoles={['admin']}>
               <AdminDashboard />
             </PrivateRoute>
-          } 
-        />
-        <Route path="/" element={<HomePage />} />
+          }
+        >
+          <Route index element={<UserManagement  />} />
+        </Route>
+
+        <Route
+          path="/barber-dashboard"
+          element={
+            <PrivateRoute allowedRoles={['barber']}>
+              <BarberDashboard />
+            </PrivateRoute>
+          }
+        >
+          <Route index element={<BarberReservations />} />
+        </Route>
       </Routes>
     </Router>
   );

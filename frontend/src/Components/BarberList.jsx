@@ -85,7 +85,6 @@ const BarberList = () => {
                   <MDBCardTitle>{barber.username}</MDBCardTitle>
                   <MDBCardText>
                     <strong>Email:</strong> {barber.email}<br />
-                    <strong>Name:</strong> {barber.name || 'Not provided'}<br />
                     <strong>Phone:</strong> {barber.phone || 'Not provided'}<br />
                     <strong>Address:</strong> {barber.address || 'Not provided'}<br />
                   </MDBCardText>

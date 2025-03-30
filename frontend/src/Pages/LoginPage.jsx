@@ -50,19 +50,20 @@ function LoginPage() {
         throw new Error(data.message || 'Login failed');
       }
 
-      // Save token to localStorage
       localStorage.setItem('token', data.token);
 
-      // Decode token to get role (you might need a JWT decode library)
       const decodedToken = jwtDecode(data.token);
       const userRole = decodedToken.role.name;
       
-      // Redirect based on role
+     
       if (userRole === 'admin') {
         navigate('/admin-dashboard');
       } else if (userRole === 'user') {
         navigate('/user-dashboard');
+      } else {
+        navigate('/barber-dashboard');
       }
+
 
     } catch (err) {
       setError(err.message || 'An error occurred during login');

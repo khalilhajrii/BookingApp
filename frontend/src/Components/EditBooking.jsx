@@ -46,7 +46,7 @@ const EditBooking = () => {
       setFormData({
         date: new Date(booking.date).toISOString().split('T')[0],
         time: booking.time,
-        status: booking.status
+        status: ''
       });
     } catch (err) {
       setError(err.message);
@@ -61,7 +61,7 @@ const EditBooking = () => {
     setError(null);
 
     try {
-      const response = await fetch(`http://localhost:8000/api/bookings/bookings/${id}`, {
+      const response = await fetch(`http://localhost:8000/api/bookings/booking/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

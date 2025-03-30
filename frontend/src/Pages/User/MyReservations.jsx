@@ -70,14 +70,15 @@ const MyReservations = () => {
   const handleCancel = async (booking) => {
     if (window.confirm('Are you sure you want to cancel this booking?')) {
       try {
-        const response = await fetch(`http://localhost:8000/api/bookings/bookings/${booking._id}`, {
+        const response = await fetch(`http://localhost:8000/api/bookings/booking/${booking._id}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           },
           body: JSON.stringify({
-            status: 'cancelled'
+            status: 'cancelled',
+            sender: 'user'
           })
         });
 
@@ -95,7 +96,17 @@ const MyReservations = () => {
   const columns = [
     {
       name: 'Barber',
-      selector: row => row.barber.username,
+      selector: row => row.barber ? row.barber.username : 'N/A',
+      sortable: true
+    },
+    {
+      name: 'Email',
+      selector: row => row.barber ? row.barber.email : 'N/A',
+      sortable: true
+    },
+    {
+      name: 'Phone',
+      selector: row => row.barber ? row.barber.phone : 'N/A',
       sortable: true
     },
     {
@@ -105,7 +116,7 @@ const MyReservations = () => {
     },
     {
       name: 'Time',
-      selector: row => row.time,
+      selector: row => row.time || 'N/A',
       sortable: true
     },
     {
@@ -113,7 +124,8 @@ const MyReservations = () => {
       cell: row => (
         <MDBBadge color={
           row.status === 'confirmed' ? 'success' :
-          row.status === 'pending' ? 'warning' : 'danger'
+          row.status === 'pending' ? 'warning' : 
+          row.status === 'rejected' ? 'danger' : 'secondary'
         }>
           {row.status.charAt(0).toUpperCase() + row.status.slice(1)}
         </MDBBadge>
@@ -122,30 +134,31 @@ const MyReservations = () => {
     },
     {
       name: 'Actions',
+      width: '250px',
       cell: row => (
-        <div>
+        <div className="d-flex gap-1">
           {row.status !== 'cancelled' && (
             <>
               <button
-                color="primary"
-                size="sm"
-                className="me-2 btn btn-primary"
+                type="button"
+                className="btn btn-primary rounded-3 py-1 px-2"
+                style={{ fontSize: '0.875rem' }}
                 onClick={() => handleEdit(row)}
               >
                 Edit
               </button>
               <button
-                color="danger"
-                size="sm"
-                className="me-2 btn btn-danger"
+                type="button"
+                className="btn btn-danger rounded-3 py-1 px-2"
+                style={{ fontSize: '0.875rem' }}
                 onClick={() => handleDelete(row)}
               >
                 Delete
               </button>
               <button
-                color="warning"
-                size="sm"
-                className="btn btn-warning"
+                type="button"
+                className="btn btn-warning rounded-3 py-1 px-2"
+                style={{ fontSize: '0.875rem' }}
                 onClick={() => handleCancel(row)}
               >
                 Cancel

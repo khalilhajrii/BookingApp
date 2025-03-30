@@ -1,17 +1,13 @@
 import React from 'react';
-import Sidebar from '../../Components/Sidebar';
 import { Outlet } from 'react-router-dom';
-const AdminDashboard = () => {
+import Sidebar from '../../Components/Sidebar';
+
+const BarberDashboard = () => {
   const sidebarItems = [
     {
-      label: 'Manage Users',
-      path: '/admin-dashboard',
-      icon: 'calendar-alt'
-    },
-    {
-      label: 'Manage Roles',
-      path: '/all-Roles',
-      icon: 'list'
+      label: 'Manage Reservations',
+      path: '/barber-dashboard',
+      icon: 'user-tie'
     }
   ];
 
@@ -19,10 +15,10 @@ const AdminDashboard = () => {
     <div style={{ display: 'flex' }}>
       <Sidebar items={sidebarItems} />
       <div style={{ marginLeft: '250px', padding: '20px', width: '100%' }}>
-      <Outlet />
+        <Outlet />
       </div>
     </div>
   );
 };
 
-export default AdminDashboard;
+export default BarberDashboard;
