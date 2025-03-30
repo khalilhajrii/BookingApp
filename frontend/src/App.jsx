@@ -16,6 +16,8 @@ import EditBooking from './Components/EditBooking';
 import BarberDashboard from './Pages/Barber/BarberDashboard';
 import BarberReservations from './Pages/Barber/BarberReservations';
 import UserManagement from './Pages/Admin/UserManagement';
+import AddUser from './Pages/Admin/AddUser';
+import UpdateUser from './Pages/Admin/UpdateUser';
 
 function App() {
   return (
@@ -46,7 +48,9 @@ function App() {
             </PrivateRoute>
           }
         >
-          <Route index element={<UserManagement  />} />
+          <Route index element={<UserManagement />} />
+          <Route path="add-user" element={<AddUser />} />
+          <Route path="update-user/:id" element={<UpdateUser />} />
         </Route>
 
         <Route

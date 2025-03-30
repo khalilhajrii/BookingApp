@@ -2,10 +2,11 @@ const User = require('../models/User');
 const Role = require('../models/Role');
 const { generateToken } = require('../utils/jwt');
 const { v4: uuidv4 } = require('uuid');
+const notificationController = require('../controllers/notificationController');
 
 const register = async (req, res) => {
   try {
-    const { username,name,lastname,dateOfBirth,sexe, email, password, role, phone, address } = req.body;
+    const { username, name, lastname, dateOfBirth, sexe, email, password, role, phone, address, sender } = req.body;
 
     const roleExists = await Role.findOne({name:role}).select('_id');
     if (!roleExists) {
@@ -23,11 +24,23 @@ const register = async (req, res) => {
       role: roleExists._id,
       phone, 
       address, 
-      activationToken 
+      activationToken,
+      isAccountActivated: sender === 'admin' ? true : false
     });
     await user.save();
+
+    if (sender === 'admin') {
+      try {
+        await notificationController.sendCredentialsNotification(user, password);
+      } catch (notifError) {
+        console.error('Failed to send credentials notification:', notifError);
+      }
+    }
+
     res.status(201).json({
-      message: 'User registered successfully. Please check your email to activate your account.',
+      message: sender === 'admin' 
+        ? 'User created successfully by admin. Account is activated.' 
+        : 'User registered successfully. Please check your email to activate your account.',
       user: {
         name: user.name,
         lastname: user.lastname,

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import DataTable from 'react-data-table-component';
 import {
     MDBContainer,
@@ -15,15 +16,18 @@ import {
     MDBModalBody,
     MDBModalFooter,
     MDBInput,
-    MDBSelect
+    MDBSelect,
+    MDBInputGroup
 } from 'mdb-react-ui-kit';
 
 const UserManagement = () => {
     const [users, setUsers] = useState([]);
+    const [filteredUsers, setFilteredUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [modalOpen, setModalOpen] = useState(false);
     const [selectedUser, setSelectedUser] = useState(null);
+    const [searchTerm, setSearchTerm] = useState('');
     const [formData, setFormData] = useState({
         username: '',
         email: '',
@@ -31,7 +35,9 @@ const UserManagement = () => {
         name: '',
         lastname: '',
         phone: '',
-        role: ''
+        role: '',
+        dateOfBirth: '',
+        sexe: ''
     });
     const [roles, setRoles] = useState(null); 
 
@@ -39,6 +45,35 @@ const UserManagement = () => {
         fetchUsers();
         fetchRoles();
     }, []);
+
+    useEffect(() => {
+        filterUsers();
+    }, [searchTerm, users]);
+
+    const filterUsers = () => {
+        if (!searchTerm) {
+            setFilteredUsers(users);
+            return;
+        }
+
+        const lowercasedTerm = searchTerm.toLowerCase();
+        const results = users.filter(user => {
+            return (
+                (user.username && user.username.toLowerCase().includes(lowercasedTerm)) ||
+                (user.name && user.name.toLowerCase().includes(lowercasedTerm)) ||
+                (user.lastname && user.lastname.toLowerCase().includes(lowercasedTerm)) ||
+                (user.email && user.email.toLowerCase().includes(lowercasedTerm)) ||
+                (user.phone && user.phone.includes(lowercasedTerm)) ||
+                (user.role && user.role.name && user.role.name.toLowerCase().includes(lowercasedTerm))
+            );
+        });
+
+        setFilteredUsers(results);
+    };
+
+    const handleSearch = (e) => {
+        setSearchTerm(e.target.value);
+    };
 
     const fetchUsers = async () => {
         try {
@@ -53,7 +88,9 @@ const UserManagement = () => {
             }
 
             const data = await response.json();
-            setUsers(data);
+            const usersData = data.users || [];
+            setUsers(usersData);
+            setFilteredUsers(usersData);
         } catch (err) {
             setError(err.message);
         } finally {
@@ -90,7 +127,9 @@ const UserManagement = () => {
             name: '',
             lastname: '',
             phone: '',
-            role: ''
+            role: '',
+            dateOfBirth: '',
+            sexe: ''
         });
         setModalOpen(true);
     };
@@ -104,7 +143,9 @@ const UserManagement = () => {
             name: user.name,
             lastname: user.lastname,
             phone: user.phone,
-            role: user.role._id
+            role: user.role._id,
+            dateOfBirth: user.dateOfBirth ? user.dateOfBirth.split('T')[0] : '',
+            sexe: user.sexe || ''
         });
         setModalOpen(true);
     };
@@ -112,7 +153,7 @@ const UserManagement = () => {
     const handleDelete = async (user) => {
         if (window.confirm('Are you sure you want to delete this user?')) {
             try {
-                const response = await fetch(`http://localhost:8000/api/users/${user._id}`, {
+                const response = await fetch(`http://localhost:8000/api/user/deleteUser/${user._id}`, {
                     method: 'DELETE',
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -134,10 +175,17 @@ const UserManagement = () => {
         e.preventDefault();
         try {
             const url = selectedUser
-                ? `http://localhost:8000/api/users/${selectedUser._id}`
-                : 'http://localhost:8000/api/users';
+                ? `http://localhost:8000/api/user/updateUser/${selectedUser._id}`
+                : 'http://localhost:8000/api/user/register';
 
             const method = selectedUser ? 'PUT' : 'POST';
+
+            const requestData = selectedUser 
+                ? { 
+                    ...formData,
+                    ...(formData.password ? {} : { password: undefined })
+                  } 
+                : { ...formData, sender: 'admin' };
 
             const response = await fetch(url, {
                 method,
@@ -145,18 +193,50 @@ const UserManagement = () => {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                 },
-                body: JSON.stringify(formData)
+                body: JSON.stringify(requestData)
             });
 
             if (!response.ok) {
                 throw new Error(selectedUser ? 'Failed to update user' : 'Failed to create user');
             }
 
+            setError('');
+            const successMsg = selectedUser 
+                ? (formData.password 
+                    ? 'User updated successfully. A new password notification has been sent.' 
+                    : 'User updated successfully.')
+                : 'User created successfully!';
+                
+            const tempMsg = document.createElement('div');
+            tempMsg.className = 'alert alert-success';
+            tempMsg.innerHTML = successMsg;
+            document.querySelector('.alert-container')?.appendChild(tempMsg);
+            
+            setTimeout(() => {
+                tempMsg.remove();
+            }, 3000);
+
             setModalOpen(false);
             fetchUsers();
         } catch (err) {
             setError(err.message);
         }
+    };
+
+    const generateRandomPassword = () => {
+        const length = 12;
+        const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+";
+        let password = "";
+        
+        for (let i = 0; i < length; i++) {
+            const randomIndex = Math.floor(Math.random() * charset.length);
+            password += charset[randomIndex];
+        }
+        
+        setFormData({
+            ...formData,
+            password
+        });
     };
 
     const columns = [
@@ -197,21 +277,22 @@ const UserManagement = () => {
             width: '200px',
             cell: row => (
                 <div className="d-flex gap-1">
-                    <button
-                        type="button"
-                        className="btn btn-primary rounded-3 py-1 px-2"
-                        style={{ fontSize: '0.875rem' }}
-                        onClick={() => handleEdit(row)}
-                    >
-                        Ed it
-                    </button>
+                    <Link to={`/admin-dashboard/update-user/${row._id}`}>
+                        <button
+                            type="button"
+                            className="btn btn-primary rounded-3 py-1 px-2"
+                            style={{ fontSize: '0.875rem' }}
+                        >
+                            Edit
+                        </button>
+                    </Link>
                     <button
                         type="button"
                         className="btn btn-danger rounded-3 py-1 px-2"
                         style={{ fontSize: '0.875rem' }}
                         onClick={() => handleDelete(row)}
                     >
-                        De te
+                        Delete
                     </button>
                 </div>
             )
@@ -234,9 +315,11 @@ const UserManagement = () => {
                 <MDBCardBody>
                     <div className="d-flex justify-content-between align-items-center mb-4">
                         <h2>User Management</h2>
-                        <MDBBtn onClick={handleAdd} className="btn-success">
-                            Add User
-                        </MDBBtn>
+                        <Link to="/admin-dashboard/add-user">
+                            <MDBBtn className="btn-success">
+                                Add User
+                            </MDBBtn>
+                        </Link>
                     </div>
 
                     {error && (
@@ -244,16 +327,35 @@ const UserManagement = () => {
                             {error}
                         </div>
                     )}
+                    
+                    <div className="alert-container">
+                        {/* Success alerts will be added here dynamically */}
+                    </div>
+
+                    <div className="mb-4">
+                        <MDBInputGroup>
+                            <MDBInput
+                                placeholder="Search by name, username, email, role..."
+                                value={searchTerm}
+                                onChange={handleSearch}
+                            />
+                        </MDBInputGroup>
+                    </div>
 
                     <DataTable
                         columns={columns}
-                        data={users}
+                        data={filteredUsers}
                         pagination
                         paginationPerPage={10}
                         paginationRowsPerPageOptions={[10, 25, 50]}
                         responsive
                         striped
                         highlightOnHover
+                        noDataComponent={
+                            <div className="text-center py-4">
+                                {searchTerm ? "No users found matching your search" : "No users available"}
+                            </div>
+                        }
                     />
                 </MDBCardBody>
             </MDBCard>
@@ -286,13 +388,29 @@ const UserManagement = () => {
                                     />
                                 </div>
                                 <div className="mb-3">
-                                    <MDBInput
-                                        type='password'
-                                        label='Password'
-                                        value={formData.password}
-                                        onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                                        required={!selectedUser}
-                                    />
+                                    <div className="input-group">
+                                        <MDBInput
+                                            type='password'
+                                            label='Password'
+                                            value={formData.password}
+                                            onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                                            required={!selectedUser}
+                                            className="w-75"
+                                        />
+                                        <MDBBtn
+                                            color="secondary"
+                                            type="button"
+                                            onClick={generateRandomPassword}
+                                            className="ms-2"
+                                        >
+                                            Generate
+                                        </MDBBtn>
+                                    </div>
+                                    {selectedUser && (
+                                        <small className="text-muted">
+                                            Leave empty to keep the current password. If changed, the user will be notified.
+                                        </small>
+                                    )}
                                 </div>
                                 <div className="mb-3">
                                     <MDBInput
@@ -316,6 +434,28 @@ const UserManagement = () => {
                                         value={formData.phone}
                                         onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                                     />
+                                </div>
+                                <div className="mb-3">
+                                    <MDBInput
+                                        type='date'
+                                        label='Date of Birth'
+                                        value={formData.dateOfBirth}
+                                        onChange={(e) => setFormData({ ...formData, dateOfBirth: e.target.value })}
+                                        required
+                                    />
+                                </div>
+                                <div className="mb-3">
+                                    <select
+                                        className="form-select"
+                                        value={formData.sexe}
+                                        onChange={(e) => setFormData({ ...formData, sexe: e.target.value })}
+                                        required
+                                    >
+                                        <option value="">Select Gender</option>
+                                        <option value="male">Male</option>
+                                        <option value="female">Female</option>
+                                        <option value="other">Other</option>
+                                    </select>
                                 </div>
                                 <div className="mb-3">
                                     <select

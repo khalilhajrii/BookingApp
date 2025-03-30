@@ -34,7 +34,6 @@ const BookingForm = () => {
     setError(null);
 
     try {
-      // Format the date to ISO string
       const formattedDate = new Date(formData.date).toISOString();
       
       const response = await fetch('http://localhost:8000/api/bookings/bookings', {
@@ -56,7 +55,6 @@ const BookingForm = () => {
         throw new Error(data.message || 'Failed to create booking');
       }
 
-      // Redirect to user dashboard after successful booking
       navigate('/user-dashboard');
     } catch (err) {
       setError(err.message);
@@ -81,7 +79,7 @@ const BookingForm = () => {
                   value={formData.date}
                   onChange={handleInputChange}
                   required
-                  min={new Date().toISOString().split('T')[0]} // Prevent selecting past dates
+                  min={new Date().toISOString().split('T')[0]}
                 />
               </MDBCol>
               <MDBCol md="6">
@@ -93,7 +91,7 @@ const BookingForm = () => {
                   value={formData.time}
                   onChange={handleInputChange}
                   required
-                  step="1800" // 30-minute intervals
+                  step="1800" 
                 />
               </MDBCol>
             </MDBRow>

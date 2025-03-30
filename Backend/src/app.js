@@ -11,7 +11,6 @@ dotenv.config();
 const { specs, swaggerUi } = require('./config/swagger');
 const app = express();
 
-// CORS configuration
 app.use(cors({
   origin: 'http://localhost:3000',
   credentials: true,

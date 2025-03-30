@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const notificationController = require('./notificationController');
 
 const getUsers = async (req, res) => {
     try {
@@ -35,16 +36,55 @@ const getUserByUserName = async (req, res) => {
 const updateUser = async (req, res) => {
     try {
         const { id } = req.params;
-        const { username, email, role, phone, address } = req.body;
+        const { username, email, password, role, phone, address, name, lastname, dateOfBirth, sexe } = req.body;
+
+        const originalUser = await User.findById(id).populate('role');
+        if (!originalUser) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        const updateData = { 
+            username, 
+            email, 
+            role, 
+            phone, 
+            address,
+            name,
+            lastname,
+            dateOfBirth,
+            sexe
+        };
+
+        let passwordChanged = false;
+        if (password && password.trim() !== '') {
+            updateData.password = password;
+            passwordChanged = true;
+        }
 
         const updatedUser = await User.findByIdAndUpdate(
             id,
-            { username, email, role, phone, address },
+            updateData,
             { new: true }
         ).populate('role');
 
         if (!updatedUser) {
             return res.status(404).json({ message: 'User not found' });
+        }
+
+        if (originalUser.email !== email || passwordChanged) {
+            try {
+                await notificationController.sendAccountUpdateNotification(
+                    updatedUser, 
+                    {
+                        emailChanged: originalUser.email !== email,
+                        passwordChanged,
+                        originalEmail: originalUser.email,
+                        plainPassword: passwordChanged ? password : null
+                    }
+                );
+            } catch (notifError) {
+                console.error('Failed to send account update notification:', notifError);
+            }
         }
 
         res.status(200).json(updatedUser);

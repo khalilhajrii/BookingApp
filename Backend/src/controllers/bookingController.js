@@ -63,7 +63,6 @@ const createBooking = async (req, res) => {
         try {
             await booking.save();
 
-            // Send email notification to barber
             const bookingDetails = {
                 barberName: `${barber.name} ${barber.lastname}`,
                 date: bookingDate,

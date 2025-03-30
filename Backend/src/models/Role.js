@@ -9,7 +9,6 @@ const roleSchema = new mongoose.Schema({
   },
 });
 
-// Check if the model exists before creating it
 const Role = mongoose.models.Role || mongoose.model('Role', roleSchema);
 
 module.exports = Role;
