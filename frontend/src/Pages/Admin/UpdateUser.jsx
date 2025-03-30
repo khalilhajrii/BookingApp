@@ -369,21 +369,22 @@ function UpdateUser() {
                 </div>
 
                 <div className="d-flex justify-content-between mt-4">
-                  <MDBBtn
+                  <button
                     color="secondary"
+                    className='btn btn-secondary'
                     type="button"
                     onClick={() => navigate('/admin-dashboard')}
                   >
                     Cancel
-                  </MDBBtn>
-                  <MDBBtn type="submit" color="primary" disabled={loading}>
+                  </button>
+                  <button type="submit" className="btn btn-dark"color="primary" disabled={loading}>
                     {loading ? (
                       <>
                         <MDBSpinner size="sm" role="status" tag="span" />
                         <span className="ms-2">Updating...</span>
                       </>
                     ) : 'Update User'}
-                  </MDBBtn>
+                  </button>
                 </div>
               </form>
             </MDBCardBody>

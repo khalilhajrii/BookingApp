@@ -18,6 +18,9 @@ import BarberReservations from './Pages/Barber/BarberReservations';
 import UserManagement from './Pages/Admin/UserManagement';
 import AddUser from './Pages/Admin/AddUser';
 import UpdateUser from './Pages/Admin/UpdateUser';
+import RoleManagement from './Pages/Admin/RoleManagement';
+import EditRole from './Pages/Admin/EditRole';
+import AddRole from './Pages/Admin/AddRole';
 
 function App() {
   return (
@@ -51,6 +54,9 @@ function App() {
           <Route index element={<UserManagement />} />
           <Route path="add-user" element={<AddUser />} />
           <Route path="update-user/:id" element={<UpdateUser />} />
+          <Route path="roles" element={<RoleManagement />} />
+          <Route path="roles/add" element={<AddRole />} />
+          <Route path="roles/edit/:id" element={<EditRole />} />
         </Route>
 
         <Route

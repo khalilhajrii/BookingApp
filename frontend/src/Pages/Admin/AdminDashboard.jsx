@@ -10,7 +10,7 @@ const AdminDashboard = () => {
     },
     {
       label: 'Manage Roles',
-      path: '/all-Roles',
+      path: 'roles',
       icon: 'list'
     }
   ];
