@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import NavBar from '../Components/NavBar';
 import {
-  MDBBtn,
   MDBContainer,
   MDBRow,
   MDBCol,
@@ -100,7 +99,7 @@ function RegisterPage() {
           username: formData.username,
           email: formData.email,
           password: formData.password,
-          role: "67d49e97eaed80cbda5dff9a",
+          role: "user",
           name: formData.name,
           lastname: formData.lastname,
           dateOfBirth: formData.dateOfBirth,

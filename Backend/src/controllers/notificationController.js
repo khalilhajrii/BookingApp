@@ -1,23 +1,24 @@
 const { sendEmail } = require('../config/email');
+const Notification = require('../models/Notification');
 
 const SendActivationAccount = async (req, res) => {
-    try {
-      const { to, subject, activationLink } = req.body;
-    
-      const emailText = `Click the link below to activate your account:\n\n${activationLink}`;
-      await sendEmail(to, subject, emailText);
-  
-      res.status(200).json('Ok');
-    } catch (error) {
-      console.error('Error sending activation email:', error);
-      res.status(500).json({ message: 'Error sending activation email', error: error.message });
-    }
-  };
+  try {
+    const { to, subject, activationLink } = req.body;
+
+    const emailText = `Click the link below to activate your account:\n\n${activationLink}`;
+    await sendEmail(to, subject, emailText);
+
+    res.status(200).json('Ok');
+  } catch (error) {
+    console.error('Error sending activation email:', error);
+    res.status(500).json({ message: 'Error sending activation email', error: error.message });
+  }
+};
 
 const sendUserStatusUpdateToBarber = async (to, bookingDetails) => {
-    try {
-        const subject = 'Booking Status Update - Client Action';
-        const emailText = `
+  try {
+    const subject = 'Booking Status Update - Client Action';
+    const emailText = `
 Dear ${bookingDetails.barberName},
 
 A client has updated their booking status.
@@ -33,17 +34,17 @@ Please log in to your dashboard to view the updated booking.
 Best regards,
 Barber Shop Team
         `;
-        await sendEmail(to, subject, emailText);
-    } catch (error) {
-        console.error('Error sending status update to barber:', error);
-        throw error;
-    }
+    await sendEmail(to, subject, emailText);
+  } catch (error) {
+    console.error('Error sending status update to barber:', error);
+    throw error;
+  }
 };
 
 const sendBarberStatusUpdateToUser = async (to, bookingDetails) => {
-    try {
-        const subject = 'Booking Status Update - Barber Action';
-        const emailText = `
+  try {
+    const subject = 'Booking Status Update - Barber Action';
+    const emailText = `
 Dear ${bookingDetails.userName},
 
 Your booking status has been updated by the barber.
@@ -59,17 +60,17 @@ Please log in to your account to view the updated booking.
 Best regards,
 Barber Shop Team
         `;
-        await sendEmail(to, subject, emailText);
-    } catch (error) {
-        console.error('Error sending status update to user:', error);
-        throw error;
-    }
+    await sendEmail(to, subject, emailText);
+  } catch (error) {
+    console.error('Error sending status update to user:', error);
+    throw error;
+  }
 };
 
 const sendNewBookingNotification = async (to, bookingDetails) => {
-    try {
-        const subject = 'New Booking Request';
-        const emailText = `
+  try {
+    const subject = 'New Booking Request';
+    const emailText = `
 Dear ${bookingDetails.barberName},
 
 You have received a new booking request.
@@ -86,17 +87,17 @@ Please log in to your dashboard to manage this booking.
 Best regards,
 Barber Shop Team
         `;
-        await sendEmail(to, subject, emailText);
-    } catch (error) {
-        console.error('Error sending new booking notification:', error);
-        throw error;
-    }
+    await sendEmail(to, subject, emailText);
+  } catch (error) {
+    console.error('Error sending new booking notification:', error);
+    throw error;
+  }
 };
 
 const sendBookingCancellationNotification = async (to, bookingDetails) => {
-    try {
-        const subject = 'Booking Cancellation';
-        const emailText = `
+  try {
+    const subject = 'Booking Cancellation';
+    const emailText = `
 Dear ${bookingDetails.barberName},
 
 A booking has been cancelled.
@@ -110,11 +111,11 @@ Client Email: ${bookingDetails.userEmail}
 Best regards,
 Barber Shop Team
         `;
-        await sendEmail(to, subject, emailText);
-    } catch (error) {
-        console.error('Error sending booking cancellation notification:', error);
-        throw error;
-    }
+    await sendEmail(to, subject, emailText);
+  } catch (error) {
+    console.error('Error sending booking cancellation notification:', error);
+    throw error;
+  }
 };
 
 const sendCredentialsNotification = async (user, plainPassword) => {
@@ -146,12 +147,12 @@ Barber Shop Team
 
 const sendAccountUpdateNotification = async (user, updateInfo) => {
   try {
-    const recipients = updateInfo.emailChanged 
-      ? [updateInfo.originalEmail, user.email] 
+    const recipients = updateInfo.emailChanged
+      ? [updateInfo.originalEmail, user.email]
       : [user.email];
-    
+
     const subject = 'Your Account Has Been Updated';
-    
+
     let emailText = `
 Dear ${user.name} ${user.lastname},
 
@@ -195,12 +196,46 @@ Barber Shop Team
   }
 };
 
-module.exports = { 
-    SendActivationAccount,
-    sendUserStatusUpdateToBarber,
-    sendBarberStatusUpdateToUser,
-    sendNewBookingNotification,
-    sendBookingCancellationNotification,
-    sendCredentialsNotification,
-    sendAccountUpdateNotification
+const getnotification = async (req, res) => {
+  try {
+    const notifications = await Notification.find({ user: req.user.id })
+      .sort({ createdAt: -1 })
+      .lean();
+    if (!Array.isArray(notifications)) {
+      return res.status(200).json([]);
+    }
+    res.status(200).json(notifications);
+  } catch (error) {
+    console.error('Notification Error:', error);
+    res.status(500).json({ 
+      message: 'Error fetching notifications',
+      error: error.message 
+    });
+  }
 };
+
+const UpdateNotifStatus = async (req, res) => {
+  try {
+    const notification = await Notification.findByIdAndUpdate(
+      req.params.id,
+      { read: true },
+      { new: true }
+    );
+    res.json(notification);
+  } catch (error) {
+    res.status(500).json({ message: 'Error updating notification' });
+  }
+};
+
+module.exports = {
+  SendActivationAccount,
+  sendUserStatusUpdateToBarber,
+  sendBarberStatusUpdateToUser,
+  sendNewBookingNotification,
+  sendBookingCancellationNotification,
+  sendCredentialsNotification,
+  sendAccountUpdateNotification,
+  getnotification,
+  UpdateNotifStatus
+};
+

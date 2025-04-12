@@ -32,7 +32,6 @@ const BarberList = () => {
         }
 
         const data = await response.json();
-        console.log('Barbers data:', data);
         setBarbers(data || []);
       } catch (err) {
         console.error('Error fetching barbers:', err);

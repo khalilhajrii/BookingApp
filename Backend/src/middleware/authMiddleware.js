@@ -26,7 +26,6 @@ function verifyToken(req, res, next) {
         return res.status(500).json({ message: 'Error finding user' });
       });
   } catch (err) {
-    console.error('Token verification error:', err.message);
     return res.status(403).json({ 
       message: 'Failed to authenticate token',
       error: err.message 

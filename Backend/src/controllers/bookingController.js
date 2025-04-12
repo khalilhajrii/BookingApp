@@ -1,6 +1,7 @@
 const Booking = require('../models/booking');
 const User = require('../models/User');
 const Role = require('../models/role');
+const Notification = require('../models/Notification');
 const { sendBookingStatusUpdate, sendUserStatusUpdateToBarber, sendBarberStatusUpdateToUser, sendNewBookingNotification } = require('./notificationController');
 
 const listAllBarbers = async (req, res) => {
@@ -51,13 +52,13 @@ const createBooking = async (req, res) => {
             return res.status(400).json({ message: 'Invalid time format. Use HH:mm format' });
         }
 
-        const booking = new Booking({ 
-            user: userId, 
-            barber: barberId, 
+        const booking = new Booking({
+            user: userId,
+            barber: barberId,
             date: bookingDate,
-            time: time, 
-            status: status, 
-            createdAt: createdAt 
+            time: time,
+            status: status,
+            createdAt: createdAt
         });
 
         try {
@@ -73,22 +74,48 @@ const createBooking = async (req, res) => {
             };
 
             await sendNewBookingNotification(barber.email, bookingDetails);
+            
+            const notification = new Notification({
+                user: barberId,
+                type: 'new_booking',
+                message: `New booking from ${user.name} ${user.lastname}`,
+                relatedEntity: booking._id,
+                metadata: {
+                    barberName: `${barber.name} ${barber.lastname}`,
+                    clientName: `${user.name} ${user.lastname}`,
+                    date: bookingDate.toISOString(),
+                    time: time
+                }
+            });
+
+            await notification.save();
+
+            const io = req.app.get('io');
+
+            io.to(barberId.toString()).emit('new_booking_notification', {
+                _id: notification._id.toString(),
+                type: notification.type,
+                message: notification.message,
+                createdAt: notification.createdAt.toISOString(),
+                read: notification.read,
+                metadata: notification.metadata
+              });
 
             res.status(200).json({ booking });
         } catch (saveError) {
             console.error('Save error details:', saveError);
-            return res.status(400).json({ 
-                message: 'Error saving booking', 
+            return res.status(400).json({
+                message: 'Error saving booking',
                 error: saveError.message,
-                details: saveError.errors 
+                details: saveError.errors
             });
         }
     } catch (error) {
         console.error('General error:', error);
-        res.status(500).json({ 
-            message: 'Error creating booking', 
+        res.status(500).json({
+            message: 'Error creating booking',
             error: error.message,
-            stack: error.stack 
+            stack: error.stack
         });
     }
 };
@@ -99,7 +126,7 @@ const updateBooking = async (req, res) => {
         const { date, time, status, sender } = req.body;
         const userId = req.user.id;
 
-        const booking = await Booking.findOne({ _id: id});
+        const booking = await Booking.findOne({ _id: id });
         if (!booking) {
             return res.status(404).json({ message: 'Booking not found' });
         }
@@ -121,7 +148,7 @@ const updateBooking = async (req, res) => {
         }
 
         if (status) {
-            if (!['pending', 'confirmed', 'cancelled','rejected'].includes(status)) {
+            if (!['pending', 'confirmed', 'cancelled', 'rejected'].includes(status)) {
                 return res.status(400).json({ message: 'Invalid status' });
             }
             booking.status = status;
@@ -179,7 +206,7 @@ const getBarberBookings = async (req, res) => {
         const userRole = req.user.role;
 
         let query = {};
-        
+
         if (userRole === 'barber') {
             query.barber = userId;
         }
