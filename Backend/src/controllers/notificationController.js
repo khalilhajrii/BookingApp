@@ -198,7 +198,7 @@ Barber Shop Team
 
 const getnotification = async (req, res) => {
   try {
-    const notifications = await Notification.find({ user: req.user.id })
+    const notifications = await Notification.find({ user: req.user.id, read: false })
       .sort({ createdAt: -1 })
       .lean();
     if (!Array.isArray(notifications)) {
