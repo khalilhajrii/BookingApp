@@ -18,6 +18,7 @@ import {
     MDBInputGroup
 } from 'mdb-react-ui-kit';
 import { useNavigate } from 'react-router-dom';
+import NavBar from '../../Components/NavBar';
 
 const RoleManagement = () => {
     const [roles, setRoles] = useState([]);
@@ -275,6 +276,8 @@ const RoleManagement = () => {
     }
 
     return (
+        <div>
+            <NavBar />
         <MDBContainer className="py-4">
             <MDBCard>
                 <MDBCardBody>
@@ -384,6 +387,7 @@ const RoleManagement = () => {
                 </MDBModalDialog>
             </MDBModal>
         </MDBContainer>
+        </div>
     );
 };
 

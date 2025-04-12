@@ -8,6 +8,7 @@ import {
   MDBBtn,
   MDBSpinner
 } from 'mdb-react-ui-kit';
+import NavBar from './NavBar';
 
 const EditBooking = () => {
   const { id } = useParams();
@@ -38,7 +39,7 @@ const EditBooking = () => {
 
       const bookings = await response.json();
       const booking = bookings.find(b => b._id === id);
-      
+
       if (!booking) {
         throw new Error('Booking not found');
       }
@@ -110,66 +111,70 @@ const EditBooking = () => {
   }
 
   return (
-    <MDBContainer className="py-4">
-      <MDBCard>
-        <MDBCardBody>
-          <h2 className="text-center mb-4">Edit Booking</h2>
-          <form onSubmit={handleSubmit}>
-            <MDBInput
-              wrapperClass="mb-4"
-              label="Date"
-              type="date"
-              name="date"
-              value={formData.date}
-              onChange={handleInputChange}
-              required
-              min={new Date().toISOString().split('T')[0]}
-            />
+    <div>
+      <NavBar />
+      <MDBContainer className="py-4">
+        <MDBCard>
+          <MDBCardBody>
+            <h2 className="text-center mb-4">Edit Booking</h2>
+            <form onSubmit={handleSubmit}>
+              <MDBInput
+                wrapperClass="mb-4"
+                label="Date"
+                type="date"
+                name="date"
+                value={formData.date}
+                onChange={handleInputChange}
+                required
+                min={new Date().toISOString().split('T')[0]}
+              />
 
-            <MDBInput
-              wrapperClass="mb-4"
-              label="Time"
-              type="time"
-              name="time"
-              value={formData.time}
-              onChange={handleInputChange}
-              required
-              step="1800"
-            />
+              <MDBInput
+                wrapperClass="mb-4"
+                label="Time"
+                type="time"
+                name="time"
+                value={formData.time}
+                onChange={handleInputChange}
+                required
+                step="1800"
+              />
 
-            {error && (
-              <div className="alert alert-danger" role="alert">
-                {error}
+              {error && (
+                <div className="alert alert-danger" role="alert">
+                  {error}
+                </div>
+              )}
+
+              <div className="d-flex justify-content-between">
+                <button
+                  color="secondary"
+                  className="btn btn-secondary"
+                  onClick={() => navigate('/user-dashboard/my-reservations')}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  color="primary"
+                  className="btn btn-dark"
+                  disabled={loading}
+                >
+                  {loading ? (
+                    <MDBSpinner size="sm" role="status" tag="span" className="ms-1">
+                      <span className="visually-hidden">Loading...</span>
+                    </MDBSpinner>
+                  ) : (
+                    'Save Changes'
+                  )}
+                </button>
               </div>
-            )}
+            </form>
+          </MDBCardBody>
+        </MDBCard>
+      </MDBContainer>
+    </div>
 
-            <div className="d-flex justify-content-between">
-              <button
-                color="secondary"
-                className="btn btn-secondary"
-                onClick={() => navigate('/user-dashboard/my-reservations')}
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                color="primary"
-                className="btn btn-dark"
-                disabled={loading}
-              >
-                {loading ? (
-                  <MDBSpinner size="sm" role="status" tag="span" className="ms-1">
-                    <span className="visually-hidden">Loading...</span>
-                  </MDBSpinner>
-                ) : (
-                  'Save Changes'
-                )}
-              </button>
-            </div>
-          </form>
-        </MDBCardBody>
-      </MDBCard>
-    </MDBContainer>
   );
 };
 

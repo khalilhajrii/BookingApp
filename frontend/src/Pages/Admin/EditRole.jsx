@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import NavBar from '../../Components/NavBar';
 
 const EditRole = () => {
     const { id } = useParams(); // Get role ID from URL
@@ -67,6 +68,7 @@ const EditRole = () => {
 
     return (
         <div>
+            <NavBar />
             <h2>Edit Role</h2>
             {error && <div className="alert alert-danger">{error}</div>}
             {success && <div className="alert alert-success">{success}</div>}

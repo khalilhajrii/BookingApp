@@ -10,6 +10,7 @@ import {
   MDBCardText,
   MDBSpinner
 } from 'mdb-react-ui-kit';
+import NavBar from './NavBar';
 
 const BarberList = () => {
   const navigate = useNavigate();
@@ -69,6 +70,8 @@ const BarberList = () => {
   }
 
   return (
+    <div>
+      <NavBar />
     <MDBContainer className="mt-4">
       <h2 className="mb-4">Available Barbers</h2>
       <MDBRow>
@@ -77,7 +80,7 @@ const BarberList = () => {
             <MDBCol key={barber._id} md="4" className="mb-4">
               <MDBCard style={{ width: '18rem' }}>
                 <img
-                  src="https://mdbcdn.b-cdn.net/img/new/standard/nature/182.webp"
+                  src="https://static.vecteezy.com/ti/vecteur-libre/t1/10403942-gentleman-barber-shop-vintage-logo-design-vectoriel.jpg"
                   className="card-img-top"
                   alt="Barber"
                 />
@@ -108,6 +111,7 @@ const BarberList = () => {
         )}
       </MDBRow>
     </MDBContainer>
+    </div>
   );
 };
 

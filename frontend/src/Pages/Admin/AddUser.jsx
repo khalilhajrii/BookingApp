@@ -11,6 +11,7 @@ import {
   MDBCardHeader,
   MDBSpinner
 } from 'mdb-react-ui-kit';
+import NavBar from '../../Components/NavBar';
 
 function AddUser() {
   const navigate = useNavigate();
@@ -167,6 +168,8 @@ function AddUser() {
   };
 
   return (
+    <div>
+      <NavBar />
     <MDBContainer className="py-4">
       <MDBRow className="justify-content-center">
         <MDBCol md="8">
@@ -339,6 +342,7 @@ function AddUser() {
         </MDBCol>
       </MDBRow>
     </MDBContainer>
+    </div>
   );
 }
 

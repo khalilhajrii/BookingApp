@@ -10,6 +10,7 @@ import {
   MDBAlert,
   MDBIcon
 } from 'mdb-react-ui-kit';
+import NavBar from '../../Components/NavBar';
 
 const BarberReservations = () => {
   const [bookings, setBookings] = useState([]);
@@ -167,6 +168,8 @@ const BarberReservations = () => {
 
 
   return (
+    <div>
+      <NavBar />
     <MDBContainer className="py-4">
       <MDBCard>
         <MDBCardBody>
@@ -184,6 +187,7 @@ const BarberReservations = () => {
         </MDBCardBody>
       </MDBCard>
     </MDBContainer>
+    </div>
   );
 };
 

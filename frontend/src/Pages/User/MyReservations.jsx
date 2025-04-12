@@ -9,6 +9,7 @@ import {
   MDBBtn,
   MDBBadge
 } from 'mdb-react-ui-kit';
+import NavBar from '../../Components/NavBar';
 
 const MyReservations = () => {
   const navigate = useNavigate();
@@ -124,8 +125,8 @@ const MyReservations = () => {
       cell: row => (
         <MDBBadge color={
           row.status === 'confirmed' ? 'success' :
-          row.status === 'pending' ? 'warning' : 
-          row.status === 'rejected' ? 'danger' : 'secondary'
+            row.status === 'pending' ? 'warning' :
+              row.status === 'rejected' ? 'danger' : 'secondary'
         }>
           {row.status.charAt(0).toUpperCase() + row.status.slice(1)}
         </MDBBadge>
@@ -135,38 +136,44 @@ const MyReservations = () => {
     {
       name: 'Actions',
       width: '250px',
-      cell: row => (
-        <div className="d-flex gap-1">
-          {row.status !== 'cancelled' && (
-            <>
-              <button
-                type="button"
-                className="btn btn-primary rounded-3 py-1 px-2"
-                style={{ fontSize: '0.875rem' }}
-                onClick={() => handleEdit(row)}
-              >
-                Edit
-              </button>
-              <button
-                type="button"
-                className="btn btn-danger rounded-3 py-1 px-2"
-                style={{ fontSize: '0.875rem' }}
-                onClick={() => handleDelete(row)}
-              >
-                Delete
-              </button>
-              <button
-                type="button"
-                className="btn btn-warning rounded-3 py-1 px-2"
-                style={{ fontSize: '0.875rem' }}
-                onClick={() => handleCancel(row)}
-              >
-                Cancel
-              </button>
-            </>
-          )}
-        </div>
-      )
+      cell: row => {
+        const isToday = new Date(row.date).toDateString() === new Date().toDateString();
+        return (
+          <div className="d-flex gap-1">
+            {row.status !== 'cancelled' && (
+              <>
+                <button
+                  type="button"
+                  className="btn btn-primary rounded-3 py-1 px-2"
+                  style={{ fontSize: '0.875rem' }}
+                  onClick={() => handleEdit(row)}
+                  disabled={isToday}
+                >
+                  Edit
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-danger rounded-3 py-1 px-2"
+                  style={{ fontSize: '0.875rem' }}
+                  onClick={() => handleDelete(row)}
+                  disabled={isToday}
+                >
+                  Delete
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-warning rounded-3 py-1 px-2"
+                  style={{ fontSize: '0.875rem' }}
+                  onClick={() => handleCancel(row)}
+                  disabled={isToday}
+                >
+                  Cancel
+                </button>
+              </>
+            )}
+          </div>
+        );
+      }
     }
   ];
 
@@ -189,23 +196,26 @@ const MyReservations = () => {
   }
 
   return (
-    <MDBContainer className="py-4">
-      <MDBCard>
-        <MDBCardBody>
-          <h2 className="text-center mb-4">My Reservations</h2>
-          <DataTable
-            columns={columns}
-            data={bookings}
-            pagination
-            paginationPerPage={10}
-            paginationRowsPerPageOptions={[10, 25, 50]}
-            responsive
-            striped
-            highlightOnHover
-          />
-        </MDBCardBody>
-      </MDBCard>
-    </MDBContainer>
+    <div>
+      <NavBar />
+      <MDBContainer className="py-4">
+        <MDBCard>
+          <MDBCardBody>
+            <h2 className="text-center mb-4">My Reservations</h2>
+            <DataTable
+              columns={columns}
+              data={bookings}
+              pagination
+              paginationPerPage={10}
+              paginationRowsPerPageOptions={[10, 25, 50]}
+              responsive
+              striped
+              highlightOnHover
+            />
+          </MDBCardBody>
+        </MDBCard>
+      </MDBContainer>
+    </div>
   );
 };
 

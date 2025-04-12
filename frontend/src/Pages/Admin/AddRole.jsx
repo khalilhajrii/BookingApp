@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import NavBar from '../../Components/NavBar';
 
 const AddRole = () => {
     const [roleName, setRoleName] = useState('');
@@ -42,6 +43,7 @@ const AddRole = () => {
 
     return (
         <div>
+            <NavBar />
             <h2>Add Role</h2>
             {error && <div className="alert alert-danger">{error}</div>}
             {success && <div className="alert alert-success">{success}</div>}

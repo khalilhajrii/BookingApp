@@ -6,20 +6,24 @@ import {
 } from 'mdb-react-ui-kit';
 import BookingForm from '../../Components/BookingForm';
 import BookingCalendar from '../../Components/BookingCalendar';
+import NavBar from '../../Components/NavBar';
 
 const TakeReservation = () => {
 
   return (
-    <MDBContainer className="py-4">
-      <MDBRow>
-        <MDBCol md="6">
-          <BookingForm />
-        </MDBCol>
-        <MDBCol md="6">
-          <BookingCalendar />
-        </MDBCol>
-      </MDBRow>
-    </MDBContainer>
+    <div>
+      <NavBar />
+      <MDBContainer className="py-4">
+        <MDBRow>
+          <MDBCol md="6">
+            <BookingForm />
+          </MDBCol>
+          <MDBCol md="6">
+            <BookingCalendar />
+          </MDBCol>
+        </MDBRow>
+      </MDBContainer>
+    </div>
   );
 };
 

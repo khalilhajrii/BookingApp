@@ -1,6 +1,7 @@
 import './App.css';
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import io from 'socket.io-client';
 import PrivateRoute from './utils/PrivateRoute';
 import LoginPage from './Pages/LoginPage';
 import RegisterPage from './Pages/RegisterPage';

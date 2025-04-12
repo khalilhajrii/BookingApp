@@ -19,6 +19,7 @@ import {
     MDBSelect,
     MDBInputGroup
 } from 'mdb-react-ui-kit';
+import NavBar from '../../Components/NavBar';
 
 const UserManagement = () => {
     const [users, setUsers] = useState([]);
@@ -310,6 +311,8 @@ const UserManagement = () => {
     }
 
     return (
+        <div>
+            <NavBar />
         <MDBContainer className="py-4">
             <MDBCard>
                 <MDBCardBody>
@@ -487,6 +490,7 @@ const UserManagement = () => {
                 </MDBModalDialog>
             </MDBModal>
         </MDBContainer>
+        </div>
     );
 };
 
