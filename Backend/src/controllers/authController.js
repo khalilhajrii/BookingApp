@@ -1,5 +1,5 @@
 const User = require('../models/User');
-const Role = require('../models/Role');
+const Role = require('../models/role');
 const { generateToken } = require('../utils/jwt');
 const { v4: uuidv4 } = require('uuid');
 const notificationController = require('../controllers/notificationController');
