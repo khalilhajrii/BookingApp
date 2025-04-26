@@ -42,7 +42,6 @@ const NavBar = () => {
         setSocket(newSocket);
 
         newSocket.on('new_booking_notification', (newNotification) => {
-          console.log('New notification:', newNotification);
           setNotifications(prev => [
             {
               ...newNotification,
@@ -54,7 +53,6 @@ const NavBar = () => {
         });
 
         newSocket.on('status_booking_notification', (newNotification) => {
-          console.log('New notification:', newNotification);
           setNotifications(prev => [
             {
               ...newNotification,
@@ -64,7 +62,6 @@ const NavBar = () => {
             ...prev
           ]);
         });
-
 
         newSocket.on('connect_error', (err) => {
           console.error('Connection error:', err.message);
@@ -96,6 +93,30 @@ const NavBar = () => {
     fetchNotifications();
   }, [isLoggedIn]);
 
+  const markAsRead = async (notificationId) => {
+    try {
+      const response = await fetch(`http://localhost:8000/api/notifications/updateNotificationStatus/${notificationId}`, {
+        method: 'PUT',
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to update notification status');
+      }
+
+      // Update the notifications state
+      setNotifications((prev) =>
+        prev.filter((notification) => notification._id !== notificationId)
+      );
+    } catch (error) {
+      console.error('Error updating notification status:', error);
+    }
+  };
+
   return (
     <Navbar
       bg={isLoggedIn ? "light" : "dark"}
@@ -104,11 +125,6 @@ const NavBar = () => {
     >
       <Container>
         <Navbar.Brand as={Link} to="/">Barber.</Navbar.Brand>
-        {/* <Nav className="me-auto">
-          {!isLoggedIn && (
-            <Nav.Link as={Link} to="/">Home</Nav.Link>
-          )}
-        </Nav> */}
 
         <Navbar.Collapse className="justify-content-end">
           {isLoggedIn ? (
@@ -144,7 +160,16 @@ const NavBar = () => {
                           </small>
                         </div>
                         {!notification.read && (
-                          <span className="badge bg-primary">New</span>
+                          <div className="d-flex align-items-center gap-2">
+                            <span className="badge bg-primary">New</span>
+                            <Button
+                              variant="outline-success"
+                              size="sm"
+                              onClick={() => markAsRead(notification._id)}
+                            >
+                              ✓
+                            </Button>
+                          </div>
                         )}
                       </Dropdown.Item>
                     ))

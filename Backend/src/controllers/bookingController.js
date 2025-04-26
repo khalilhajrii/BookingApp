@@ -51,7 +51,15 @@ const createBooking = async (req, res) => {
         if (!timeRegex.test(time)) {
             return res.status(400).json({ message: 'Invalid time format. Use HH:mm format' });
         }
+        const existingBooking = await Booking.findOne({
+            barber: barberId,
+            date: bookingDate,
+            time: time
+        });
 
+        if (existingBooking) {
+            return res.status(400).json({ message: 'A booking already exists for this date and time' });
+        }
         const booking = new Booking({
             user: userId,
             barber: barberId,

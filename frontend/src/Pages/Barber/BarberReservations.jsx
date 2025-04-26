@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import DataTable from 'react-data-table-component';
+import {jwtDecode} from 'jwt-decode';
 import {
   MDBContainer,
   MDBCard,
@@ -24,8 +25,10 @@ const BarberReservations = () => {
   const fetchBookings = async () => {
     try {
       const token = localStorage.getItem('token');
+      const decodedToken = jwtDecode(token);
+      const barberId = decodedToken.userId; // Assuming the token contains the barber's ID
 
-      const response = await fetch('http://localhost:8000/api/bookings/barber/bookings', {
+      const response = await fetch(`http://localhost:8000/api/bookings/barber/${barberId}/bookings`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -88,17 +91,17 @@ const BarberReservations = () => {
   const columns = [
     {
       name: 'Client Name',
-      selector: row => `${row.user.name} ${row.user.lastname}`,
+      selector: row => row.user ? `${row.user.name} ${row.user.lastname}` : 'N/A',
       sortable: true
     },
     {
       name: 'Client Email',
-      selector: row => row.user.email,
+      selector: row => row.user?.email || 'N/A',
       sortable: true
     },
     {
       name: 'Client Phone',
-      selector: row => row.user.phone,
+      selector: row => row.user?.phone || 'N/A',
       sortable: true
     },
     {
@@ -166,29 +169,49 @@ const BarberReservations = () => {
     );
   }
 
+  if (error) {
+    return (
+      <div  className="text-center">
+        {error}
+      </div>
+    );
+  }
+
+  if (bookings.length === 0) {
+    return (
+      <MDBContainer className="py-4">
+        <MDBCard>
+          <MDBCardBody>
+            <h2 className="text-center mb-4">Manage Reservations</h2>
+            <p className="text-center">No reservations available.</p>
+          </MDBCardBody>
+        </MDBCard>
+      </MDBContainer>
+    );
+  }
 
   return (
     <div>
       <NavBar />
-    <MDBContainer className="py-4">
-      <MDBCard>
-        <MDBCardBody>
-          <h2 className="text-center mb-4">Manage Reservations</h2>
-          <DataTable
-            columns={columns}
-            data={bookings}
-            pagination
-            paginationPerPage={10}
-            paginationRowsPerPageOptions={[10, 25, 50]}
-            responsive
-            striped
-            highlightOnHover
-          />
-        </MDBCardBody>
-      </MDBCard>
-    </MDBContainer>
+      <MDBContainer className="py-4">
+        <MDBCard>
+          <MDBCardBody>
+            <h2 className="text-center mb-4">Manage Reservations</h2>
+            <DataTable
+              columns={columns}
+              data={bookings}
+              pagination
+              paginationPerPage={10}
+              paginationRowsPerPageOptions={[10, 25, 50]}
+              responsive
+              striped
+              highlightOnHover
+            />
+          </MDBCardBody>
+        </MDBCard>
+      </MDBContainer>
     </div>
   );
 };
 
-export default BarberReservations; 
+export default BarberReservations;

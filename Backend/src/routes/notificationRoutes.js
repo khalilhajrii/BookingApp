@@ -6,6 +6,5 @@ const jwtMiddleware = require('../middleware/authMiddleware');
 
 router.post('/sendActivationLink', NotificationController.SendActivationAccount);
 router.get('/getNotification',jwtMiddleware, NotificationController.getnotification);
-router.get('/updateNotificationStatus',jwtMiddleware, NotificationController.UpdateNotifStatus);
-
+router.put('/updateNotificationStatus/:id', jwtMiddleware, NotificationController.UpdateNotifStatus);
 module.exports = router;
