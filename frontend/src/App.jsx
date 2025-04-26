@@ -27,11 +27,11 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/login" element={<LoginPage />} />
+        <Route path="" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/registration-success" element={<RegistrationSuccess />} />
         <Route path="/activate/:token" element={<AccountActivation />} />
-        <Route path="/" element={<HomePage />} />
+        {/* <Route path="/" element={<HomePage />} /> */}
 
         <Route path="/user-dashboard" element={
           <PrivateRoute allowedRoles={['user']}>

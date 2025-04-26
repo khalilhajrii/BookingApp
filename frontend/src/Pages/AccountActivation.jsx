@@ -28,7 +28,7 @@ function AccountActivation() {
 
         setStatus('success');
         setTimeout(() => {
-          navigate('/login');
+          navigate('/');
         }, 3000);
 
       } catch (err) {
@@ -60,7 +60,7 @@ function AccountActivation() {
                 <MDBIcon fas icon="check-circle" size='3x' className='text-success mb-3' />
                 <h2>Account Activated!</h2>
                 <p>Your account has been successfully activated. Redirecting to login...</p>
-                <MDBBtn color='primary' onClick={() => navigate('/login')}>
+                <MDBBtn color='primary' onClick={() => navigate('/')}>
                   Go to Login
                 </MDBBtn>
               </>

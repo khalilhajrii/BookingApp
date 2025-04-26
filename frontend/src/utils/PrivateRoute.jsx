@@ -5,7 +5,7 @@ import { jwtDecode } from 'jwt-decode';
 const PrivateRoute = ({ children, allowedRoles }) => {
   const token = localStorage.getItem('token');
   if (!token) {
-    return <Navigate to="/login" />;
+    return <Navigate to="/" />;
   }
 
   try {
@@ -20,7 +20,7 @@ const PrivateRoute = ({ children, allowedRoles }) => {
   } catch (error) {
     console.error('Token decode error:', error);
     localStorage.removeItem('token');
-    return <Navigate to="/login" />;
+    return <Navigate to="/" />;
   }
 };
 

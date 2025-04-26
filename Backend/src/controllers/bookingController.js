@@ -158,8 +158,8 @@ const updateBooking = async (req, res) => {
 
         if (status) {
             const populatedBooking = await Booking.findById(booking._id)
-                .populate('user', 'name lastname email')
-                .populate('barber', 'name lastname email');
+                .populate('user', 'name lastname email username')
+                .populate('barber', 'name lastname email username');
 
             const bookingDetails = {
                 userName: `${populatedBooking.user.name} ${populatedBooking.user.lastname}`,
@@ -171,8 +171,57 @@ const updateBooking = async (req, res) => {
 
             if (sender === 'user') {
                 await sendUserStatusUpdateToBarber(populatedBooking.barber.email, bookingDetails);
+
+                const notification = new Notification({
+                    user: populatedBooking.barber._id, // Target the barber
+                    type: 'Change_Status_booking',
+                    message: `Status updated from ${populatedBooking.user.name} ${populatedBooking.user.lastname}`,
+                    relatedEntity: booking._id,
+                    metadata: {
+                        barberName: `${populatedBooking.barber.name} ${populatedBooking.barber.lastname}`,
+                        clientName: `${populatedBooking.user.name} ${populatedBooking.user.lastname}`,
+                        date: new Date().toISOString(),
+                        time: time
+                    }
+                });
+            
+                await notification.save();
+            
+                const io = req.app.get('io');
+                io.to(populatedBooking.barber._id.toString()).emit('status_booking_notification', {
+                    _id: notification._id.toString(),
+                    type: notification.type,
+                    message: notification.message,
+                    createdAt: notification.createdAt.toISOString(),
+                    read: notification.read,
+                    metadata: notification.metadata
+                });
             } else {
                 await sendBarberStatusUpdateToUser(populatedBooking.user.email, bookingDetails);
+                const notification = new Notification({
+                    user: populatedBooking.user._id, // Target the barber
+                    type: 'Change_Status_booking',
+                    message: `Status updated from ${populatedBooking.barber.username}`,
+                    relatedEntity: booking._id,
+                    metadata: {
+                        barberName: `${populatedBooking.barber.name} ${populatedBooking.barber.lastname}`,
+                        clientName: `${populatedBooking.user.name} ${populatedBooking.user.lastname}`,
+                        date: new Date().toISOString(),
+                        time: time
+                    }
+                });
+            
+                await notification.save();
+            
+                const io = req.app.get('io');
+                io.to(populatedBooking.user._id.toString()).emit('status_booking_notification', {
+                    _id: notification._id.toString(),
+                    type: notification.type,
+                    message: notification.message,
+                    createdAt: notification.createdAt.toISOString(),
+                    read: notification.read,
+                    metadata: notification.metadata
+                });
             }
         }
 

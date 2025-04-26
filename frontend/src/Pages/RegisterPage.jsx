@@ -284,7 +284,7 @@ function RegisterPage() {
                     </button>
 
                     <div className="text-center">
-                      <p>Already have an account? <a href="/login" className="text-primary">Sign in</a></p>
+                      <p>Already have an account? <a href="/" className="text-primary">Sign in</a></p>
                     </div>
                   </form>
                 </MDBCardBody>

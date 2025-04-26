@@ -52,6 +52,20 @@ const NavBar = () => {
             ...prev
           ]);
         });
+
+        newSocket.on('status_booking_notification', (newNotification) => {
+          console.log('New notification:', newNotification);
+          setNotifications(prev => [
+            {
+              ...newNotification,
+              createdAt: new Date(newNotification.createdAt),
+              _id: newNotification._id || Date.now().toString() // Fallback ID
+            },
+            ...prev
+          ]);
+        });
+
+
         newSocket.on('connect_error', (err) => {
           console.error('Connection error:', err.message);
         });
@@ -90,11 +104,11 @@ const NavBar = () => {
     >
       <Container>
         <Navbar.Brand as={Link} to="/">Barber.</Navbar.Brand>
-        <Nav className="me-auto">
+        {/* <Nav className="me-auto">
           {!isLoggedIn && (
             <Nav.Link as={Link} to="/">Home</Nav.Link>
           )}
-        </Nav>
+        </Nav> */}
 
         <Navbar.Collapse className="justify-content-end">
           {isLoggedIn ? (
